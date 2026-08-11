@@ -1,5 +1,4 @@
 import { defineManifest } from "@crxjs/vite-plugin";
-
 export default defineManifest({
   manifest_version: 3,
 
@@ -24,7 +23,14 @@ export default defineManifest({
   content_scripts: [
     {
       matches: ["<all_urls>"],
-      js: ["src/content/content.ts"],
+      js: ["src/content/content.tsx"],
+    },
+  ],
+
+  web_accessible_resources: [
+    {
+      resources: ["assets/*"],
+      matches: ["<all_urls>"],
     },
   ],
 });

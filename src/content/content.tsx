@@ -1,3 +1,6 @@
+import { createRoot } from "react-dom/client";
+import { Overlay } from "../overlay/Overlay";
+
 const BUTTON_ID = "dev-overlay-toggle";
 
 function createFloatingButton(): void {
@@ -27,7 +30,20 @@ function createFloatingButton(): void {
   });
 
   button.addEventListener("click", () => {
-    console.log("DevOverlay button clicked");
+    const existingOverlay = document.getElementById("dev-overlay-root");
+
+    if (existingOverlay) {
+      existingOverlay.remove();
+      return;
+    }
+
+    const container = document.createElement("div");
+
+    container.id = "dev-overlay-root";
+
+    document.body.appendChild(container);
+
+    createRoot(container).render(<Overlay />);
   });
 
   document.body.appendChild(button);
