@@ -21,11 +21,16 @@ export default defineManifest({
   },
 
   content_scripts: [
-    {
-      matches: ["<all_urls>"],
-      js: ["src/content/content.tsx"],
-    },
-  ],
+  {
+    matches: ["<all_urls>"],
+    js: ["src/content/interceptor.ts"],
+    world: "MAIN",
+  },
+  {
+    matches: ["<all_urls>"],
+    js: ["src/content/content.tsx"],
+  },
+],
 
   web_accessible_resources: [
     {

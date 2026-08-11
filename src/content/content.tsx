@@ -1,6 +1,8 @@
 import { createRoot } from "react-dom/client";
 import { Overlay } from "../overlay/Overlay";
-
+import { installFetchInterceptor } from "../services/networkInterceptor";
+import type { ApiRequest } from "../shared/types";
+import { useEffect, useState } from "react";
 const BUTTON_ID = "dev-overlay-toggle";
 
 function createFloatingButton(): void {
@@ -43,14 +45,53 @@ function createFloatingButton(): void {
 
     document.body.appendChild(container);
 
-    createRoot(container).render(<Overlay />);
+    createRoot(container).render(<OverlayContainer />);
   });
+
+  installFetchInterceptor((request) => {
+  console.log("🌐 API Request:", request);
+});
 
   document.body.appendChild(button);
 }
+
+
 
 if (document.readyState === "loading") {
   document.addEventListener("DOMContentLoaded", createFloatingButton);
 } else {
   createFloatingButton();
+}
+
+
+
+
+
+function OverlayContainer() {
+  const [requests, setRequests] = useState<ApiRequest[]>([]);
+
+  useEffect(() => {
+    const handleNetworkRequest = (event: Event) => {
+      const customEvent = event as CustomEvent<ApiRequest>;
+
+      setRequests((previous) => [
+        ...previous,
+        customEvent.detail,
+      ]);
+    };
+
+    window.addEventListener(
+      "dev-overlay-network",
+      handleNetworkRequest,
+    );
+
+    return () => {
+      window.removeEventListener(
+        "dev-overlay-network",
+        handleNetworkRequest,
+      );
+    };
+  }, []);
+
+  return <Overlay requests={requests} />;
 }
